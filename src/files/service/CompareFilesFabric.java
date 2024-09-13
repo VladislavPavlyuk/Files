@@ -1,6 +1,6 @@
-package service;
+package files.service;
 
-import files.CompareFiles;
+import files.models.CompareFiles;
 
 import java.util.Scanner;
 
@@ -14,6 +14,7 @@ public class CompareFilesFabric {
 
         System.out.println("Введите путь ко второму файлу:");
         String path2 = scanner.nextLine();
+
         CompareFiles compareFiles = new CompareFiles();
         compareFiles.setPath1(path1);
         compareFiles.setPath2(path2);
