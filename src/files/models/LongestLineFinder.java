@@ -13,6 +13,14 @@ public class LongestLineFinder {
     }
     public LongestLineFinder(){}
 
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
     public void findLongestLine(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String longestLine = "";
