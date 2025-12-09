@@ -105,4 +105,27 @@ public class Corporation {
             System.out.println("Error loading employees: " + e.getMessage());
         }
     }
+
+    public static List<Employee> getEmployees() {
+        return employees;
+    }
+
+    public static void displayAllEmployees() {
+        if (employees.isEmpty()) {
+            System.out.println("Список сотрудников пуст.");
+            return;
+        }
+
+        System.out.println("\n=== Список сотрудников ===");
+        System.out.println(String.format("%-20s %-8s %-20s %-15s", "Фамилия", "Возраст", "Должность", "Зарплата"));
+        System.out.println("--------------------------------------------------------------------------------");
+        for (Employee employee : employees) {
+            System.out.println(String.format("%-20s %-8d %-20s %-15.2f",
+                    employee.getLastName(),
+                    employee.getAge(),
+                    employee.getPosition(),
+                    employee.getSalary()));
+        }
+        System.out.println("--------------------------------------------------------------------------------\n");
+    }
 }

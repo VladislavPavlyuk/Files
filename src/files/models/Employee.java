@@ -3,7 +3,7 @@ package files.models;
 import java.io.*;
 import java.util.*;
 
-class Employee implements Serializable {
+public class Employee implements Serializable {
     private String lastName;
     private int age;
     private String position;
