@@ -10,9 +10,14 @@ public class ArrayProcessor {
 
     public String inputFilename() {
         Scanner scanner = new Scanner(System.in);
+        final String DEFAULT_FILE = "arrays.txt";
 
-        System.out.println("Введите путь к файлу:");
+        System.out.println("Введите путь к файлу (Enter для использования " + DEFAULT_FILE + "):");
         String fileName = scanner.nextLine();
+        if (fileName.trim().isEmpty()) {
+            fileName = DEFAULT_FILE;
+            System.out.println("Используется путь по умолчанию: " + fileName);
+        }
         return fileName;
     }
 
@@ -21,9 +26,15 @@ public class ArrayProcessor {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(" ");
-                int[] array = Arrays.stream(parts).mapToInt(Integer::parseInt).toArray();
-                arrays.add(array);
+                // Разделяем по пробелам и запятым, фильтруем пустые строки
+                String[] parts = line.split("[\\s,]+");
+                int[] array = Arrays.stream(parts)
+                        .filter(s -> !s.trim().isEmpty())
+                        .mapToInt(s -> Integer.parseInt(s.trim()))
+                        .toArray();
+                if (array.length > 0) {
+                    arrays.add(array);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
