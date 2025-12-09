@@ -1,31 +1,42 @@
 package files.service;
 
-import files.models.Corporation;
+import files.factories.ServiceFactory;
 import files.models.Employee;
+import files.presentation.EmployeeDisplay;
+import files.services.EmployeeService;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class CorporationFabric {
     private static final String FILE_NAME = "employees.dat";
+    private final EmployeeService employeeService;
+    private final EmployeeDisplay display;
+    private final files.interfaces.IInputReader inputReader;
 
-    public static void createCorporation() {
-        File file = new File(FILE_NAME);
-        if (!file.exists()) {
+    public CorporationFabric() {
+        this.employeeService = ServiceFactory.createEmployeeService(FILE_NAME);
+        this.display = new EmployeeDisplay();
+        this.inputReader = ServiceFactory.createInputReader();
+    }
+
+    public void createCorporation() {
+        files.interfaces.IEmployeeStorage storage = ServiceFactory.createEmployeeStorage(FILE_NAME);
+        
+        if (!storage.exists()) {
             System.out.println("Файл " + FILE_NAME + " не найден. Создание начального списка сотрудников...");
             generateDefaultEmployees();
         }
+        
+        try {
+            employeeService.loadEmployees();
+        } catch (IOException e) {
+            System.out.println("Ошибка при загрузке сотрудников: " + e.getMessage());
+        }
 
-        Corporation corporation = new Corporation();
-        corporation.loadEmployees();
-        corporation.displayAllEmployees();
+        display.displayAll(employeeService.getAllEmployees());
 
-        Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("1. Add Employee");
             System.out.println("2. Edit Employee");
@@ -37,7 +48,7 @@ public class CorporationFabric {
             
             int choice;
             try {
-                String input = scanner.nextLine();
+                String input = inputReader.readLine("");
                 choice = Integer.parseInt(input);
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a number from 1 to 6.");
@@ -46,31 +57,35 @@ public class CorporationFabric {
 
             switch (choice) {
                 case 1:
-                    corporation.addEmployee(scanner);
+                    employeeService.addEmployee();
                     break;
                 case 2:
-                    corporation.editEmployee(scanner);
+                    employeeService.editEmployee();
                     break;
                 case 3:
-                    corporation.deleteEmployee(scanner);
+                    employeeService.deleteEmployee();
                     break;
                 case 4:
-                    corporation.searchEmployee(scanner);
+                    employeeService.searchEmployee();
                     break;
                 case 5:
-                    corporation.displayEmployees(scanner);
+                    employeeService.displayEmployeesByFilter();
                     break;
                 case 6:
-                    corporation.saveEmployees();
+                    try {
+                        employeeService.saveEmployees();
+                    } catch (IOException e) {
+                        System.out.println("Ошибка при сохранении: " + e.getMessage());
+                    }
                     System.out.println("Exiting...");
                     return;
                 default:
                     System.out.println("Invalid choice. Please enter a number from 1 to 6.");
+            }
         }
     }
-}
 
-    private static void generateDefaultEmployees() {
+    private void generateDefaultEmployees() {
         List<Employee> defaultEmployees = new ArrayList<>();
         defaultEmployees.add(new Employee("Иванов", 30, "Менеджер", 50000.0));
         defaultEmployees.add(new Employee("Петров", 25, "Разработчик", 60000.0));
@@ -78,8 +93,8 @@ public class CorporationFabric {
         defaultEmployees.add(new Employee("Козлов", 28, "Аналитик", 55000.0));
         defaultEmployees.add(new Employee("Смирнов", 32, "Тестировщик", 45000.0));
 
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_NAME))) {
-            oos.writeObject(defaultEmployees);
+        try {
+            ServiceFactory.createEmployeeStorage(FILE_NAME).save(defaultEmployees);
             System.out.println("Создан начальный список из " + defaultEmployees.size() + " сотрудников.");
         } catch (IOException e) {
             System.out.println("Ошибка при создании файла сотрудников: " + e.getMessage());

@@ -1,25 +1,34 @@
 package files.service;
 
-import files.models.LongestLineFinder;
+import files.factories.ServiceFactory;
+import files.presentation.LongestLineDisplay;
+import files.services.LongestLineFinderService;
 
-import java.util.Scanner;
+import java.io.IOException;
 
 public class LongestLineFinderFabric {
+    private final LongestLineFinderService finderService;
+    private final LongestLineDisplay display;
+    private final files.interfaces.IInputReader inputReader;
 
-    public static String runLongestLineFinder() {
+    public LongestLineFinderFabric() {
+        this.finderService = ServiceFactory.createLongestLineFinderService();
+        this.display = new LongestLineDisplay();
+        this.inputReader = ServiceFactory.createInputReader();
+    }
 
-        Scanner scanner = new Scanner(System.in);
-        final String DEFAULT_FILE = "file1.txt";
+    public String runLongestLineFinder() {
+        String filePath = inputReader.readLineWithDefault(
+            "Введите путь к файлу (Enter для использования file1.txt): ",
+            "file1.txt"
+        );
 
-        System.out.println("Введите путь к файлу (Enter для использования " + DEFAULT_FILE + "):");
-        String filePath = scanner.nextLine();
-        if (filePath.trim().isEmpty()) {
-            filePath = DEFAULT_FILE;
-            System.out.println("Используется путь по умолчанию: " + filePath);
+        try {
+            LongestLineFinderService.LongestLineResult result = finderService.findLongestLine(filePath);
+            display.display(result);
+        } catch (IOException e) {
+            System.out.println("Произошла ошибка при чтении файла: " + e.getMessage());
         }
-
-        LongestLineFinder longestLineFinder = new LongestLineFinder(filePath);
-        longestLineFinder.findLongestLine(filePath);
         return filePath;
     }
 }

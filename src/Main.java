@@ -1,9 +1,8 @@
-import files.models.ArrayProcessor;
+import files.service.ArrayProcessorFabric;
 import files.service.ArrayToFileFabric;
 import files.service.CompareFilesFabric;
 import files.service.CorporationFabric;
 import files.service.LongestLineFinderFabric;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -19,7 +18,6 @@ public class Main {
         // Задание 1
         if (tasks.size() > 0) {
             System.out.println("Выполняется: " + tasks.get(0));
-
         }
         CompareFilesFabric compareFilesFabric = new CompareFilesFabric();
         compareFilesFabric.runCompareFiles();
@@ -37,13 +35,12 @@ public class Main {
         if (tasks.size() > 2) {
             System.out.println("Выполняется: " + getTaskDescription(tasks, 2) + "\n");
         }
-        ArrayProcessor arrayProcessor = new ArrayProcessor();
-        arrayProcessor.run(arrayProcessor.inputFilename());
+        ArrayProcessorFabric arrayProcessorFabric = new ArrayProcessorFabric();
+        arrayProcessorFabric.run();
         System.out.println("\n Задание 3 завершено\n");
 
         // Задание 4
         if (tasks.size() > 3) {
-
             System.out.println("Выполняется: " + getTaskDescription(tasks, 3) + "\n");
         }
         ArrayToFileFabric arrayToFileFabric = new ArrayToFileFabric();
